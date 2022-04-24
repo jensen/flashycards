@@ -6,6 +6,7 @@ COPY . /app
 RUN npm install
 RUN npm run build
 
+RUN mkdir -p data
 RUN chown -R `stat -c "%u:%g" /app/data` /app/data
 
 EXPOSE 3000
