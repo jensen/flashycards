@@ -129,3 +129,6 @@ a {
 hr {
   border-style: solid;
 }
+button {
+  font-family: inherit;
+}
