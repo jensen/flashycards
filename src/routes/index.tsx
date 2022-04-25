@@ -13,6 +13,11 @@ export default function Index() {
 
   return (
     <ul>
+      <li className="deck center-item glass">
+        <Link to={`/decks/new`} className="deck-link">
+          <span className="deck-create">Create Deck</span>
+        </Link>
+      </li>
       {decks.map((deck) => (
         <li key={deck.id} className="deck glass">
           <Link to={`/decks/${deck.id}`} className="deck-link">

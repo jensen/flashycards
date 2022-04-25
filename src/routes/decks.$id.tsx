@@ -72,7 +72,7 @@ export default function Deck() {
     onMoved: (correct: boolean) => send("NEXT", { correct }),
   });
 
-  const card = context.cards[context.current];
+  const [card] = context.cards;
 
   if (current.matches("show")) {
     return (
@@ -109,7 +109,12 @@ export default function Deck() {
 
   return (
     <div>
-      <button onClick={() => send("START")}>Again</button>
+      <button
+        className="btn btn-large rounded padded"
+        onClick={() => send("START")}
+      >
+        Start Again
+      </button>
     </div>
   );
 }

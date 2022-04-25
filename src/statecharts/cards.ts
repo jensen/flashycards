@@ -2,16 +2,10 @@ import { createMachine, assign } from "xstate";
 import { useMachine } from "@xstate/react";
 import shuffle from "../utils/shuffle";
 
-interface ICard {
-  id: number;
-  question: string;
-  answer: string;
-}
-
 interface IContext {
   cards: ICard[];
-  current: number;
-  correct: number[];
+  correct: ICard[];
+  redo: ICard[];
 }
 
 const machine = createMachine<IContext>(
@@ -20,33 +14,28 @@ const machine = createMachine<IContext>(
     initial: "show",
     context: {
       cards: [],
-      current: 0,
       correct: [],
+      redo: [],
     },
     states: {
-      restart: {
-        onEntry: assign((context, event) => {
-          return {
-            cards: shuffle(
-              context.cards.map((card) => ({
-                ...card,
-              }))
-            ),
-          };
-        }),
+      shuffle: {
+        onEntry: assign((context, event) => ({
+          cards: shuffle(context.cards),
+        })),
         always: "show",
       },
       show: {
+        always: [
+          { target: "shuffle", actions: "continue", cond: "isEmpty" },
+          { target: "complete", cond: "isComplete" },
+        ],
         on: {
-          NEXT: [
-            { target: "complete", cond: "isComplete" },
-            { target: "show", actions: ["nextCard"] },
-          ],
+          NEXT: [{ target: "show", actions: "nextCard" }],
         },
       },
       complete: {
         on: {
-          START: { target: "restart", actions: ["reset"] },
+          START: { target: "shuffle", actions: ["reset"] },
         },
       },
     },
@@ -54,16 +43,33 @@ const machine = createMachine<IContext>(
   {
     guards: {
       isComplete: (context, event) =>
-        context.current === context.cards.length - 1,
+        context.cards.length === 0 && context.redo.length === 0,
+      isEmpty: (context, event) =>
+        context.cards.length === 0 && context.redo.length > 0,
     },
     actions: {
-      nextCard: assign((context, event) => ({
-        current: context.current + 1,
-        correct: event.correct
-          ? [...context.correct, context.cards[context.current].id]
-          : context.correct,
+      nextCard: assign((context, event) => {
+        const [current] = context.cards;
+        const cards = context.cards.slice(1);
+
+        return event.correct
+          ? {
+              cards,
+              correct: [...context.correct, current],
+            }
+          : {
+              cards,
+              redo: [...context.redo, current],
+            };
+      }),
+      continue: assign((context, event) => ({
+        cards: [...context.redo],
+        redo: [],
       })),
-      reset: assign((context, event) => ({ current: 0, correct: [] })),
+      reset: assign((context, event) => ({
+        cards: [...context.correct],
+        correct: [],
+      })),
     },
   }
 );
