@@ -36,7 +36,7 @@ export default function useCardDrag({ onMoved }) {
   const onDragEnd = ({ offset: { x, y } }) => {
     const rad = Math.atan2(y, x);
 
-    if (Math.abs(x) > 300 || Math.abs(y) > 300) {
+    if (Math.abs(x) > 100 || Math.abs(y) > 100) {
       moveCard(
         {
           x: 1000 * Math.cos(rad),
