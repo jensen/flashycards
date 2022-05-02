@@ -11,8 +11,6 @@ const defaultAnimation = {
   },
 };
 
-const DRAG_THRESHOLD = "ontouchstart" in document.documentElement ? 100 : 300;
-
 export default function useCardDrag({ onMoved }) {
   const [dragStart, setDragStart] = useState({
     axis: null,
@@ -37,6 +35,8 @@ export default function useCardDrag({ onMoved }) {
 
   const onDragEnd = ({ offset: { x, y } }) => {
     const rad = Math.atan2(y, x);
+    const DRAG_THRESHOLD =
+      "ontouchstart" in document.documentElement ? 100 : 300;
 
     if (Math.abs(x) > DRAG_THRESHOLD || Math.abs(y) > DRAG_THRESHOLD) {
       moveCard(
