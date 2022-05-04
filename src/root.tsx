@@ -66,7 +66,7 @@ export default function App() {
       </head>
       <body className={`gradient-${gradient}`}>
         <main className="layout">
-          <header className="glass header">
+          <header className="glass header no-select">
             <Link className="header-text font-bold" to="/">
               flashy<span className="font-light">cards</span>
             </Link>
